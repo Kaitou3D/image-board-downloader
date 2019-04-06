@@ -1,0 +1,27 @@
+﻿<Window x:Class="ImgDownloader.Views.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImgDownloader.Views"
+        mc:Ignorable="d"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="SettingsView" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="auto"/>            
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="auto"/>
+            
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Global Black List" Height="30" VerticalAlignment="Top"/>
+        <TextBox Grid.Row="2" Grid.Column="1"  Text="Welcome to the city" MinHeight="100" MinWidth="200" TextWrapping="Wrap" AcceptsReturn="True" />
+
+    </Grid>
+</Window>

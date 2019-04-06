@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Query" nillable="true" type="Query" />
+  <xs:complexType name="Query">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="searchName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="tag0" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="tag1" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="tag2" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="tag3" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="tag4" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="searchTerms" type="ArrayOfString" />
+      <xs:element minOccurs="0" maxOccurs="1" name="searchBlackList" type="ArrayOfString" />
+      <xs:element minOccurs="1" maxOccurs="1" name="useGlobalBlacklist" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="sortTags" type="ArrayOfString" />
+      <xs:element minOccurs="1" maxOccurs="1" name="useSortTags" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="lastExecute" type="xs:dateTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="downloadDirectory" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="SearchType" type="QueryType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfString">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="QueryType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="E621" />
+      <xs:enumeration value="Booru" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

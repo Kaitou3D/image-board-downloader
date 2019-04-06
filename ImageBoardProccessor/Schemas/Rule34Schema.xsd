@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="posts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="post" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="height" type="xs:string" />
+            <xs:attribute name="score" type="xs:string" />
+            <xs:attribute name="file_url" type="xs:string" />
+            <xs:attribute name="parent_id" type="xs:string" />
+            <xs:attribute name="sample_url" type="xs:string" />
+            <xs:attribute name="sample_width" type="xs:string" />
+            <xs:attribute name="sample_height" type="xs:string" />
+            <xs:attribute name="preview_url" type="xs:string" />
+            <xs:attribute name="rating" type="xs:string" />
+            <xs:attribute name="tags" type="xs:string" />
+            <xs:attribute name="id" type="xs:string" />
+            <xs:attribute name="width" type="xs:string" />
+            <xs:attribute name="change" type="xs:string" />
+            <xs:attribute name="md5" type="xs:string" />
+            <xs:attribute name="creator_id" type="xs:string" />
+            <xs:attribute name="has_children" type="xs:string" />
+            <xs:attribute name="created_at" type="xs:string" />
+            <xs:attribute name="status" type="xs:string" />
+            <xs:attribute name="source" type="xs:string" />
+            <xs:attribute name="has_notes" type="xs:string" />
+            <xs:attribute name="has_comments" type="xs:string" />
+            <xs:attribute name="preview_width" type="xs:string" />
+            <xs:attribute name="preview_height" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="count" type="xs:string" />
+      <xs:attribute name="offset" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="posts" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBoardProcessor", "ImageBoardProccessor\ImageBoardProcessor.csproj", "{1259CF91-6798-49C6-8BCD-D08D76D8F7F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageDLTest", "ImageDLTest\ImageDLTest.csproj", "{028B8B19-8F91-439E-A4EF-36F2B6CD6608}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgDownloader", "ImgDownloader\ImgDownloader.csproj", "{3E0EFF20-1277-4903-A9BB-77563BC69F7A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1259CF91-6798-49C6-8BCD-D08D76D8F7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1259CF91-6798-49C6-8BCD-D08D76D8F7F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1259CF91-6798-49C6-8BCD-D08D76D8F7F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1259CF91-6798-49C6-8BCD-D08D76D8F7F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028B8B19-8F91-439E-A4EF-36F2B6CD6608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028B8B19-8F91-439E-A4EF-36F2B6CD6608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028B8B19-8F91-439E-A4EF-36F2B6CD6608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028B8B19-8F91-439E-A4EF-36F2B6CD6608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {301C285D-31EA-4957-A218-AEE32171EA0B}
+	EndGlobalSection
+EndGlobal
