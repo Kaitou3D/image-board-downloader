@@ -20,27 +20,36 @@ namespace ImageDLTest
         static void Main(string[] args)
         {
             List<string> searchtags = new List<string>() { "nawka", "cum" };
-            ImgBrdProcessor processor = new ImgBrdProcessor();
+           
             
             Directory.Exists(@"D:\Pictures\New folder\");
 
+            Process();
 
             // The code provided will print ‘Hello World’ to the console.
             // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
             Console.WriteLine("Hello World! Lets get yiffy!");
+            
+          
+            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
+        }
+
+        static async void Process()
+        {
             try
             {
-
-                Query q = new Query();
+                ImgBrdProcessor processor = new ImgBrdProcessor();
+                Query q = new Query(ImageBoardProcessor.Enumerations.QueryType.Rule34);
                 q.tag0 = "renamon";
                 q.tag1 = "male//female";
-                var result = processor.Rule34Search(q);
-                foreach (var item in result.Result)
+                Console.WriteLine("We're searching");
+                var result = await processor.Rule34Search(q);
+                Console.WriteLine("We got them!");
+                foreach (var item in result)
                 {
                     foreach ( var post in item.post)
                     {
-                        Console.WriteLine( post.file_url);
-
+                        Console.WriteLine(post.file_url);
                     }
                 }
             }
@@ -50,8 +59,6 @@ namespace ImageDLTest
                 Console.WriteLine($" I dont know chief! ");
                 Console.WriteLine(e.Message);
             }
-          
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
         }
       
     }

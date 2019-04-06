@@ -27,7 +27,7 @@ namespace ImageBoardProcessor.Models
         public virtual string tag4 { get; set; }
 
         [XmlIgnore]
-        public string[] searchTerms { get; set; }
+        public string[] searchTerms { get; set; } = new string[5];
         public virtual StringCollection searchBlackList { get; set; } = new StringCollection();
         public bool useGlobalBlacklist { get; set; }
         public StringCollection sortTags { get; set; } = new StringCollection();
