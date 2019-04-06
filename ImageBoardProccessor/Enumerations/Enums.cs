@@ -7,6 +7,7 @@ namespace ImageBoardProcessor.Enumerations
     public enum QueryType
     {
         E621,
+        Rule34,
         Booru
     }
 }

@@ -90,19 +90,11 @@ namespace ImageBoardProcessor.Models
     public partial class Image
     {
 
-        private string heightField;
-
         private string scoreField;
 
         private string file_urlField;
 
         private string parent_idField;
-
-        private string sample_urlField;
-
-        private string sample_widthField;
-
-        private string sample_heightField;
 
         private string preview_urlField;
 
@@ -112,43 +104,9 @@ namespace ImageBoardProcessor.Models
 
         private string idField;
 
-        private string widthField;
-
-        private string changeField;
-
-        private string md5Field;
-
         private string creator_idField;
 
-        private string has_childrenField;
-
-        private string created_atField;
-
-        private string statusField;
-
         private string sourceField;
-
-        private string has_notesField;
-
-        private string has_commentsField;
-
-        private string preview_widthField;
-
-        private string preview_heightField;
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string height
-        {
-            get
-            {
-                return this.heightField;
-            }
-            set
-            {
-                this.heightField = value;
-            }
-        }
 
         /// <remarks/>
         [XmlAttributeAttribute()]
@@ -194,62 +152,6 @@ namespace ImageBoardProcessor.Models
 
         /// <remarks/>
         [XmlAttributeAttribute()]
-        public string sample_url
-        {
-            get
-            {
-                return this.sample_urlField;
-            }
-            set
-            {
-                this.sample_urlField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string sample_width
-        {
-            get
-            {
-                return this.sample_widthField;
-            }
-            set
-            {
-                this.sample_widthField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string sample_height
-        {
-            get
-            {
-                return this.sample_heightField;
-            }
-            set
-            {
-                this.sample_heightField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string preview_url
-        {
-            get
-            {
-                return this.preview_urlField;
-            }
-            set
-            {
-                this.preview_urlField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
         public string rating
         {
             get
@@ -278,62 +180,6 @@ namespace ImageBoardProcessor.Models
 
         /// <remarks/>
         [XmlAttributeAttribute()]
-        public string id
-        {
-            get
-            {
-                return this.idField;
-            }
-            set
-            {
-                this.idField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string width
-        {
-            get
-            {
-                return this.widthField;
-            }
-            set
-            {
-                this.widthField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string change
-        {
-            get
-            {
-                return this.changeField;
-            }
-            set
-            {
-                this.changeField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string md5
-        {
-            get
-            {
-                return this.md5Field;
-            }
-            set
-            {
-                this.md5Field = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
         public string creator_id
         {
             get
@@ -343,48 +189,6 @@ namespace ImageBoardProcessor.Models
             set
             {
                 this.creator_idField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string has_children
-        {
-            get
-            {
-                return this.has_childrenField;
-            }
-            set
-            {
-                this.has_childrenField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string created_at
-        {
-            get
-            {
-                return this.created_atField;
-            }
-            set
-            {
-                this.created_atField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string status
-        {
-            get
-            {
-                return this.statusField;
-            }
-            set
-            {
-                this.statusField = value;
             }
         }
 
@@ -402,61 +206,6 @@ namespace ImageBoardProcessor.Models
             }
         }
 
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string has_notes
-        {
-            get
-            {
-                return this.has_notesField;
-            }
-            set
-            {
-                this.has_notesField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string has_comments
-        {
-            get
-            {
-                return this.has_commentsField;
-            }
-            set
-            {
-                this.has_commentsField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string preview_width
-        {
-            get
-            {
-                return this.preview_widthField;
-            }
-            set
-            {
-                this.preview_widthField = value;
-            }
-        }
-
-        /// <remarks/>
-        [XmlAttributeAttribute()]
-        public string preview_height
-        {
-            get
-            {
-                return this.preview_heightField;
-            }
-            set
-            {
-                this.preview_heightField = value;
-            }
-        }
     }
 
     /// <remarks/>

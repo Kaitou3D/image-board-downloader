@@ -207,6 +207,7 @@ namespace ImgDownloader.ViewModels
         {
             query.ParseSearchQuery();
             List<E621Model> result = await processor.E621Search(query.searchTerms.ToList());
+            
             Console.WriteLine($"We completed the search! we found {result.Count}");
             if(!Directory.Exists(query.downloadDirectory))
             {

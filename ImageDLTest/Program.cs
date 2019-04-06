@@ -31,25 +31,18 @@ namespace ImageDLTest
             try
             {
 
-                
-                var result = processor.E621Search(searchtags);
-                //Test();              
-                
-                Console.WriteLine(result.Result.Count);
-                
-                Parallel.ForEach(processor.files, new ParallelOptions { MaxDegreeOfParallelism = 4 }, 
-                    file => 
+                Query q = new Query();
+                q.tag0 = "renamon";
+                q.tag1 = "male//female";
+                var result = processor.Rule34Search(q);
+                foreach (var item in result.Result)
+                {
+                    foreach ( var post in item.post)
                     {
-                        WebClient wc = new WebClient();
-                       
-                        wc.DownloadFile(file.File_url, @"D:\Pictures\New folder\"+file.filename);
-                        
+                        Console.WriteLine( post.file_url);
 
-
-                        Console.WriteLine("Download complete");
-                        wc.Dispose();
-                    });
-                    
+                    }
+                }
             }
             catch (Exception e)
             {

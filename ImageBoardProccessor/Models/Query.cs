@@ -4,7 +4,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Specialized;
 using ImageBoardProcessor.Enumerations;
-
+using System.Web;
 
 namespace ImageBoardProcessor.Models
 {
@@ -13,11 +13,13 @@ namespace ImageBoardProcessor.Models
     {
         const string E621BASEURL = "https://e621.net/post/index.json";
         const string GELBOORUBASEURL = "https://e621.net/post/index.json";
+        const string RULE34BASEURL = "https://rule34.xxx//index.php";
 
         const string E621BASEQUERYAPPEND = "&limit=320&before_id=";
+        const string RULE34QUERYAPPEND = "&s=post&q=index";
         const string PROGRAMID = "ImgBoardDownloader/Alpha(kaitoukitsune)";
         [XmlAttribute]
-        public virtual string searchName { get; set; }          
+        public virtual string searchName { get; set; }
         public virtual string tag0 { get; set; }
         public virtual string tag1 { get; set; }
         public virtual string tag2 { get; set; }
@@ -37,7 +39,7 @@ namespace ImageBoardProcessor.Models
         public static bool IsProper(Query query)
         {
             bool result;
-            if(String.IsNullOrEmpty(query.searchName) || String.IsNullOrEmpty(query.searchName) || 
+            if (String.IsNullOrEmpty(query.searchName) || String.IsNullOrEmpty(query.searchName) ||
                 query.searchTerms.All(term => string.IsNullOrEmpty(term)))
             {
                 result = false;
@@ -46,11 +48,11 @@ namespace ImageBoardProcessor.Models
             {
                 result = true;
             }
-            
+
 
             return result;
         }
-        UriBuilder URLbuilder;
+        public UriBuilder URLbuilder;
         string BooruBase;
 
 
@@ -66,12 +68,47 @@ namespace ImageBoardProcessor.Models
             searchTerms[2] = string.Empty;
             searchTerms[3] = string.Empty;
             searchTerms[4] = string.Empty;
-            searchBlackList.Add("Fool");
-            sortTags.Add("deadweight");
+
             URLbuilder = new UriBuilder();
 
 
 
+        }
+
+        public Query(QueryType queryType)
+        {
+            SearchType = queryType;
+            switch (queryType)
+            {
+
+                case QueryType.E621:
+                    URLbuilder = new UriBuilder(E621BASEURL);
+                    var E621query = HttpUtility.ParseQueryString(URLbuilder.Query);
+                    E621query["limit"] = 32.ToString();
+                    E621query["beforeID"] = "";
+                    URLbuilder.Query = E621query.ToString();
+                    break;
+                case QueryType.Rule34:
+                    URLbuilder = new UriBuilder(E621BASEURL);
+                    var Rule34query = HttpUtility.ParseQueryString(URLbuilder.Query);
+                    Rule34query["page"] = "dapi";
+                    Rule34query["s"] = "post";
+                    Rule34query["pid"] = "0";
+                    URLbuilder.Query = Rule34query.ToString();
+                    break;
+                case QueryType.Booru:
+                    break;
+                default:
+                    break;
+            }
+
+            tag0 = string.Empty;
+            tag1 = string.Empty;
+            tag2 = string.Empty;
+            tag3 = string.Empty;
+            tag4 = string.Empty;
+
+            searchTerms = new string[] {tag0,tag1,tag2,tag3,tag4 };
         }
 
 
@@ -86,6 +123,20 @@ namespace ImageBoardProcessor.Models
            
 
 
+        }
+
+        public Uri GetQuery()
+        {
+            switch (SearchType)
+            {
+                case QueryType.E621:
+                    break;
+                case QueryType.Booru:
+                    break;
+                default:
+                    break;
+            }
+            return URLbuilder.Uri;
         }
 
         public bool isValid()

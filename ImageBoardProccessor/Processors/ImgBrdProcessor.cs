@@ -12,7 +12,10 @@ using ImageBoardProcessor.Clients;
 using System.Drawing;
 using System.IO;
 using System.Collections.Concurrent;
-using ImageBoardProcessor.Models;
+using System.Xml;
+using System.Xml.Serialization;
+
+using System.Net.Http.Headers;
 
 namespace ImageBoardProcessor.Processors
 {
@@ -49,59 +52,127 @@ namespace ImageBoardProcessor.Processors
         
         public async Task<List<E621Model>> E621Search(List<string> tags ) 
         {
-            List<E621Model>files = new List<E621Model>();
-            string beforeID = "";
 
-            //Form the query string and add it to the URI        
-            string query = "tags=" + string.Join("+", tags) + BASEQUERYAPPEND;
-            
-            url.Query = query;              
-                        
-            //The first time we iterate through our request lists, BEFORE_ID will be null. If we have over 320 results from the
-            //last query, take the last model ID from the list and set BEFORE_ID to it. Repeat the qeury until we have reached the end
-            //of of the sites list
-            bool cont = false;
-            do
+            try
             {
-                List<E621Model> results = new List<E621Model>();
-                ApiClient.InitilizeClient();
+                List<E621Model> files = new List<E621Model>();
+                string beforeID = "";
 
-                HttpResponseMessage response = await ApiClient.WebClient.GetAsync(url.Uri);
+                //Form the query string and add it to the URI        
+                string query = "tags=" + string.Join("+", tags) + BASEQUERYAPPEND;
+
+                url.Query = query;
+
+                //The first time we iterate through our request lists, BEFORE_ID will be null. If we have over 320 results from the
+                //last query, take the last model ID from the list and set BEFORE_ID to it. Repeat the qeury until we have reached the end
+                //of of the sites list
+                bool cont = false;
+                do
                 {
-                    if (response.IsSuccessStatusCode)
+                    List<E621Model> results = new List<E621Model>();
+                    ApiClient.InitilizeClient();
+
+                    HttpResponseMessage response = await ApiClient.WebClient.GetAsync(url.Uri);
                     {
-                         results.AddRange(await response.Content.ReadAsAsync<List<E621Model>>());
+                        if (response.IsSuccessStatusCode)
+                        {
+                            results.AddRange(await response.Content.ReadAsAsync<List<E621Model>>());
+                        }
+                        else
+                        {
+                            throw new Exception(response.ReasonPhrase);
+                        }
+
+                    }
+
+                    beforeID = results.Last().Id.ToString();
+
+                    files.AddRange(results);
+
+                    if (results.Count == 320)
+                    {
+                        cont = true;
+                        url.Query = query + beforeID;
+
                     }
                     else
                     {
-                        throw new Exception(response.ReasonPhrase);
+                        cont = false;
                     }
-                    
-                }
-                                
-                beforeID = results.Last().Id.ToString();
 
-                files.AddRange(results);
+                } while (cont);
 
-                if(results.Count ==320)
-                {
-                    cont = true;
-                    url.Query = query + beforeID;
+                return files;
+            }
+            catch(HttpRequestException)
+            {
 
-                }
-                else
-                {
-                    cont = false;
-                }
-
-            } while (cont);
-            
-            return files;
+            }
+           
+            finally
+            {
+                ApiClient.WebClient.Dispose();
+                
+            }
+            return null;
         }      
 
         public async Task<List<Rule34Model>> Rule34Search(Query search)
         {
+            List<Rule34Model> results = new List<Rule34Model>();
 
+            var wc = new HttpClient();
+            wc.DefaultRequestHeaders.Accept.Clear();
+            wc.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+            wc.DefaultRequestHeaders.Add("User-Agent", "DesktopProject/1.0 (by kaitoukitsune on e621)");
+            var serlizer = new XmlSerializer(typeof(Rule34Model));
+            bool repeat = false;
+            int pidnum = 0;
+            string pidstring = $"&pid={pidnum}";
+            UriBuilder src = new UriBuilder( search.GetQuery());
+            string querystring = src.Query;
+            src.Query = querystring + pidstring;
+            try
+            {
+                do
+                {
+                    // Access the site
+                    var response = await wc.GetStreamAsync(src.Uri);
+                    //Take the stream if we are succesful
+                    using (var reader = XmlReader.Create(response))
+                    {
+
+                        results.Add((Rule34Model)serlizer.Deserialize(reader));
+                    }
+                    if(results.Last().post.Length ==100)
+                    {
+                        pidnum++;
+                        src.Query = querystring + pidstring;
+                        repeat = true;
+                    }
+                    else
+                    {
+                        repeat = false;
+                    }
+                   
+
+                } while (repeat);
+
+
+                return results;
+            }
+            catch (HttpRequestException ex)
+            {
+                
+
+                throw ex;
+            }
+            finally
+            {
+                //Clean up after ourselves
+                wc.Dispose();
+            }
+        
         }
         
 
