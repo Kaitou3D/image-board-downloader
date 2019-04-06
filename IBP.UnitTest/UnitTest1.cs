@@ -6,7 +6,7 @@ using System;
 namespace IBP.UnitTest
 {
     [TestClass]
-    public class UnitTest1
+    public class IBPUnitTests
     {
         [TestMethod]
         public void QueryConstructorTest()
@@ -14,6 +14,7 @@ namespace IBP.UnitTest
             Query query = new Query(QueryType.Rule34);
             Assert.AreEqual(QueryType.Rule34, query.SearchType);
             Console.WriteLine(query.URLbuilder.Uri);
+            Console.WriteLine(query.GetQuery(new string[] { "renamon",@"male/female" }).ToString());
         }
     }
 }

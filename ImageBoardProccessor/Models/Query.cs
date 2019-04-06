@@ -86,14 +86,16 @@ namespace ImageBoardProcessor.Models
                     var E621query = HttpUtility.ParseQueryString(URLbuilder.Query);
                     E621query["limit"] = 32.ToString();
                     E621query["beforeID"] = "";
+                    E621query["tags"] = "";
                     URLbuilder.Query = E621query.ToString();
                     break;
                 case QueryType.Rule34:
-                    URLbuilder = new UriBuilder(E621BASEURL);
+                    URLbuilder = new UriBuilder(RULE34BASEURL);
                     var Rule34query = HttpUtility.ParseQueryString(URLbuilder.Query);
                     Rule34query["page"] = "dapi";
                     Rule34query["s"] = "post";
                     Rule34query["pid"] = "0";
+                    Rule34query["q"] = "index";
                     URLbuilder.Query = Rule34query.ToString();
                     break;
                 case QueryType.Booru:
@@ -125,17 +127,21 @@ namespace ImageBoardProcessor.Models
 
         }
 
-        public Uri GetQuery()
+        public Uri GetQuery(string[] tags )
         {
-            switch (SearchType)
+            if(tags.Length == 0 || tags.Length>5)
             {
-                case QueryType.E621:
-                    break;
-                case QueryType.Booru:
-                    break;
-                default:
-                    break;
+                throw new ArgumentOutOfRangeException("tags","The incoming arry must be at least length of 1 and not longer than 5");
             }
+            if(string.IsNullOrWhiteSpace(tags[0]))
+            {
+                throw new ArgumentException("The first tag in the array is invalid.", "tags");
+            }
+            var query = HttpUtility.ParseQueryString(URLbuilder.Query);
+            string tagcombined = string.Join("+", tags);
+            query["tags"] = tagcombined;
+            
+            URLbuilder.Query = HttpUtility.UrlDecode(query.ToString());
             return URLbuilder.Uri;
         }
 

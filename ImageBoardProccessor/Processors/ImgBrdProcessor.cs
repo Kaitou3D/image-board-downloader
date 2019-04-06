@@ -129,7 +129,7 @@ namespace ImageBoardProcessor.Processors
             bool repeat = false;
             int pidnum = 0;
             string pidstring = $"&pid={pidnum}";
-            UriBuilder src = new UriBuilder( search.GetQuery());
+            UriBuilder src = new UriBuilder( search.GetQuery(search.searchTerms));
             string querystring = src.Query;
             src.Query = querystring + pidstring;
             try
