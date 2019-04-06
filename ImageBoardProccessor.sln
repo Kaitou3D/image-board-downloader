@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageDLTest", "ImageDLTest\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgDownloader", "ImgDownloader\ImgDownloader.csproj", "{3E0EFF20-1277-4903-A9BB-77563BC69F7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBP.UnitTest", "IBP.UnitTest\IBP.UnitTest.csproj", "{B9885BB5-977E-4D46-AD9A-5A4CD04BEC42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E0EFF20-1277-4903-A9BB-77563BC69F7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9885BB5-977E-4D46-AD9A-5A4CD04BEC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9885BB5-977E-4D46-AD9A-5A4CD04BEC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9885BB5-977E-4D46-AD9A-5A4CD04BEC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9885BB5-977E-4D46-AD9A-5A4CD04BEC42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
