@@ -14,6 +14,7 @@ using System.IO;
 using System.Collections.Concurrent;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Linq;
 
 using System.Net.Http.Headers;
 
@@ -43,14 +44,15 @@ namespace ImageBoardProcessor.Processors
 
         public ImgBrdProcessor()
         {
-            
+           
         }
 
+
+
         /// <summary>
-        /// Execute the query
+        /// Execute the query, with filtered tags
         /// </summary>
-        
-        public async Task<List<E621Model>> E621Search(List<string> tags ) 
+        public async Task<List<E621Model>> E621Search(List<string> tags, IEnumerable<string> filterTags)
         {
 
             try
@@ -88,6 +90,82 @@ namespace ImageBoardProcessor.Processors
                     beforeID = results.Last().Id.ToString();
 
                     files.AddRange(results);
+
+                    var sorted = files.Where(x => filterTags.Any(l => x.Tags == l)).ToList();
+
+                    if (results.Count == 320)
+                    {
+                        cont = true;
+                        url.Query = query + beforeID;
+
+                    }
+                    else
+                    {
+                        cont = false;
+                    }
+
+                } while (cont);
+
+                return files;
+            }
+            catch (HttpRequestException)
+            {
+
+            }
+
+            finally
+            {
+                ApiClient.WebClient.Dispose();
+
+            }
+            return null;
+        }
+
+
+
+        /// <summary>
+        /// Execute the query
+        /// </summary>
+        public async Task<List<E621Model>> E621Search(List<string> tags) 
+        {
+
+            try
+            {
+                List<E621Model> files = new List<E621Model>();
+                string beforeID = "";
+
+                //Form the query string and add it to the URI        
+                string query = "tags=" + string.Join("+", tags) + BASEQUERYAPPEND;
+
+                url.Query = query;
+
+                //The first time we iterate through our request lists, BEFORE_ID will be null. If we have over 320 results from the
+                //last query, take the last model ID from the list and set BEFORE_ID to it. Repeat the qeury until we have reached the end
+                //of of the sites list
+                bool cont = false;
+                do
+                {
+                    List<E621Model> results = new List<E621Model>();
+                    ApiClient.InitilizeClient();
+
+                    HttpResponseMessage response = await ApiClient.WebClient.GetAsync(url.Uri);
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            results.AddRange(await response.Content.ReadAsAsync<List<E621Model>>());
+                        }
+                        else
+                        {
+                            throw new Exception(response.ReasonPhrase);
+                        }
+
+                    }
+
+                    beforeID = results.Last().Id.ToString();
+
+                    files.AddRange(results);
+
+                    
 
                     if (results.Count == 320)
                     {
