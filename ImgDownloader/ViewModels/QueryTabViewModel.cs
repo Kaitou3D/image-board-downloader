@@ -134,6 +134,11 @@ namespace ImgDownloader.ViewModels
 
         public string Error => throw new NotImplementedException();
 
+        /// <summary>
+        /// Error string for when something is not correct with the form. Displayed to user
+        /// </summary>
+        /// <param name="columnName"> Which control is producing the error</param>
+        /// <returns></returns>
         public string this[string columnName]
         {
             get
@@ -202,31 +207,40 @@ namespace ImgDownloader.ViewModels
             processor = new ImgBrdProcessor();
         }
 
+        /// <summary>
+        /// Executes the query agsint the image board
+        /// </summary>
+        /// <returns></returns>
         private async Task Search()
         {
             //query.ParseSearchQuery();
             Console.WriteLine($"Started at {DateTime.UtcNow.ToLongTimeString()}");
+
             var tasking = await Task.Run(() => processor.E621Search(query.searchTerms.ToList()));
 
             Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
 
             await Task.Run(() => download(tasking));
 
-
             Console.WriteLine($"We completed the search! we found {tasking.Count}");
 
 
         }
-        private void download(IEnumerable<E621Model> results)
+
+        /// <summary>
+        /// Parses through the query and begins downloading the images
+        /// </summary>
+        /// <param name="queryResults"> the list of items to download</param>
+        private void download(IEnumerable<IFile> queryResults)
         {
             if (!Directory.Exists(query.downloadDirectory))
             {
                 Console.WriteLine("Directory missing, making it now");
                 Directory.CreateDirectory(query.downloadDirectory);
             }
-            if (results.Any())
+            if (queryResults.Any())
             {
-                Parallel.ForEach(results, new ParallelOptions { MaxDegreeOfParallelism = 4 },
+                Parallel.ForEach(queryResults, new ParallelOptions { MaxDegreeOfParallelism = 4 },
                             file =>
                             {
                                 WebClient wc = new WebClient();
@@ -243,7 +257,10 @@ namespace ImgDownloader.ViewModels
 
         }
 
-
+        /// <summary>
+        /// Validates the state of the query for execution
+        /// </summary>
+        /// <returns>True = proceed with execution</returns>
         private bool CanSearch()
         {
             return true;
@@ -251,18 +268,28 @@ namespace ImgDownloader.ViewModels
             //return query.isValid();
         }
 
+        /// <summary>
+        /// Writes out the query to file
+        /// </summary>
         private void SaveQuery()
         {
 
             QuerySerilizer.SaveQuery(query);
         }
 
+        /// <summary>
+        /// Validates the state of the query for saving
+        /// </summary>
+        /// <returns>True: Proceed with writing</returns>
         private bool CanSaveQuery()
         {
             return query.isValid();
 
         }
 
+        /// <summary>
+        /// Loads a query from disk
+        /// </summary>
         private void LoadQuery()
         {
 
@@ -276,6 +303,9 @@ namespace ImgDownloader.ViewModels
             }
         }
 
+        /// <summary>
+        /// Loads a directory to the form
+        /// </summary>
         private void LoadDirectory()
         {
             using (FolderBrowserDialog diag = new FolderBrowserDialog())
@@ -287,7 +317,10 @@ namespace ImgDownloader.ViewModels
             }
         }
 
-
+        /// <summary>
+        /// Validates the state of the program  for loading a query
+        /// </summary>
+        /// <returns>True: proceed with load</returns>
         private bool CanLoadQuery()
         {
             return true;
