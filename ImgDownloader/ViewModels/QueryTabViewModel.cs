@@ -16,14 +16,20 @@ using System.IO;
 using System.ComponentModel;
 using ImageBoardProcessor.Serializers;
 using System.Windows.Forms;
+using PropertyChanged;
+using System.Diagnostics;
+using System.Threading;
 
 namespace ImgDownloader.ViewModels
 {
+    [AddINotifyPropertyChangedInterface]
     public class QueryTabViewModel : BindableBase, IDataErrorInfo
     {
         public Query query { get; set; } = new Query();
-        public Person person { get; set; } = new Person();
+
         ImgBrdProcessor processor;
+
+        public int Progress { get; set; }
 
         public string SearchName
         {
@@ -43,24 +49,24 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.tag0;
+                return query.searchTerms[0];
             }
             set
             {
-                query.tag0 = value;
+                query.searchTerms[0] = value;
                 search.RaiseCanExecuteChanged();
             }
-        }       
+        }
 
         public string SearchTag1
         {
             get
             {
-                return query.tag1;
+                return query.searchTerms[1];
             }
             set
             {
-                query.tag1 = value;
+                query.searchTerms[1] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -69,11 +75,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.tag2;
+                return query.searchTerms[2];
             }
             set
             {
-                query.tag2= value;
+                query.searchTerms[2] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -82,11 +88,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.tag3;
+                return query.searchTerms[3];
             }
             set
             {
-                query.tag3 = value;
+                query.searchTerms[3] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -95,11 +101,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.tag4;
+                return query.searchTerms[4];
             }
             set
             {
-                query.tag4 = value;
+                query.searchTerms[4] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -119,14 +125,7 @@ namespace ImgDownloader.ViewModels
             }
         }
 
-
-
-
-
-
         public bool isSearch { get; set; }
-
-        
 
         public DelegateCommand search { get; private set; }
         public DelegateCommand save { get; private set; }
@@ -143,7 +142,7 @@ namespace ImgDownloader.ViewModels
                 switch (columnName)
                 {
                     case "SearchName":
-                        if(string.IsNullOrWhiteSpace(SearchName))
+                        if (string.IsNullOrWhiteSpace(SearchName))
                             result = "The search name cannot be empty";
                         break;
                     case "SearchTag0":
@@ -153,7 +152,7 @@ namespace ImgDownloader.ViewModels
                             result = "Tags Cannot contain spaces";
                         break;
                     case "SearchTag1":
-                        
+
                         if (SearchTag1.Contains(' '))
                             result = "Tags Cannot contain spaces";
                         break;
@@ -180,7 +179,7 @@ namespace ImgDownloader.ViewModels
                 }
                 return result;
 
-                
+
             }
 
 
@@ -190,68 +189,83 @@ namespace ImgDownloader.ViewModels
         public QueryTabViewModel()
         {
             query.searchName = "E621";
-            query.tag0 = "instant_loss_2koma";
-            query.tag1 = "";
-            query.tag2 = "";
-            query.tag3 = "";
-            query.tag4 = "";
+            query.searchTerms[0] = "instant_loss_2koma";
+            query.searchTerms[1] = "";
+            query.searchTerms[2] = "";
+            query.searchTerms[3] = "";
+            query.searchTerms[4] = "";
             query.downloadDirectory = @"D:\Pictures\Rouge";
-            search  =   new DelegateCommand(Search, CanSearch);
-            save    =   new DelegateCommand(SaveQuery, CanSaveQuery);
+            search = new DelegateCommand(async () => await Search());
+            save = new DelegateCommand(SaveQuery, CanSaveQuery);
             load = new DelegateCommand(LoadQuery, CanLoadQuery);
             OpenFolder = new DelegateCommand(LoadDirectory);
             processor = new ImgBrdProcessor();
         }
 
-        private async void Search()
+        private async Task Search()
         {
-            query.ParseSearchQuery();
-            List<E621Model> result = await processor.E621Search(query.searchTerms.ToList());
-            
-            Console.WriteLine($"We completed the search! we found {result.Count}");
-            if(!Directory.Exists(query.downloadDirectory))
+            //query.ParseSearchQuery();
+            Console.WriteLine($"Started at {DateTime.UtcNow.ToLongTimeString()}");
+            var tasking = await Task.Run(() => processor.E621Search(query.searchTerms.ToList()));
+
+            Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
+
+            await Task.Run(() => download(tasking));
+
+
+            Console.WriteLine($"We completed the search! we found {tasking.Count}");
+
+
+        }
+        private void download(IEnumerable<E621Model> results)
+        {
+            if (!Directory.Exists(query.downloadDirectory))
             {
                 Console.WriteLine("Directory missing, making it now");
                 Directory.CreateDirectory(query.downloadDirectory);
             }
-            if (result.Any())
+            if (results.Any())
             {
-                Parallel.ForEach(result, new ParallelOptions { MaxDegreeOfParallelism = 4 },
+                Parallel.ForEach(results, new ParallelOptions { MaxDegreeOfParallelism = 4 },
                             file =>
                             {
                                 WebClient wc = new WebClient();
-                                wc.DownloadFile(file.File_url,$@"{query.downloadDirectory}\{file.filename}");                                
+                                wc.DownloadFileAsync(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
                                 wc.Dispose();
                             });
                 Console.WriteLine("We're done!");
-                query.lastExecute = DateTime.UtcNow;
             }
             else
             { Console.WriteLine("We didnt get anything back!"); }
-            
+
+            Console.WriteLine($"SCompleted at {DateTime.UtcNow.ToLongTimeString()}");
+            query.lastExecute = DateTime.UtcNow;
+
         }
+
 
         private bool CanSearch()
         {
+            return true;
             //return query.isValid();
-            return query.isValid();
+            //return query.isValid();
         }
 
-        private  void SaveQuery()
+        private void SaveQuery()
         {
-            
+
             QuerySerilizer.SaveQuery(query);
         }
 
         private bool CanSaveQuery()
         {
             return query.isValid();
-           
+
         }
 
         private void LoadQuery()
         {
-            
+
             using (OpenFileDialog diag = new OpenFileDialog())
             {
                 diag.Filter = "xml Files (*.xml)|*.xml";
@@ -266,7 +280,7 @@ namespace ImgDownloader.ViewModels
         {
             using (FolderBrowserDialog diag = new FolderBrowserDialog())
             {
-                if(diag.ShowDialog() == DialogResult.OK)
+                if (diag.ShowDialog() == DialogResult.OK)
                 {
                     SearchDir = diag.SelectedPath;
                 }
@@ -279,6 +293,6 @@ namespace ImgDownloader.ViewModels
             return true;
         }
 
-       
+
     }
 }

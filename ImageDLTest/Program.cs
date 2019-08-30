@@ -40,8 +40,8 @@ namespace ImageDLTest
             {
                 ImgBrdProcessor processor = new ImgBrdProcessor();
                 Query q = new Query(ImageBoardProcessor.Enumerations.QueryType.Rule34);
-                q.tag0 = "renamon";
-                q.tag1 = "male//female";
+                q.searchTerms[0] = "renamon";
+                q.searchTerms[1] = "male//female";
                 Console.WriteLine("We're searching");
                 var result = await processor.Rule34Search(q);
                 Console.WriteLine("We got them!");

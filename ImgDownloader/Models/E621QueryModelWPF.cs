@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ImageBoardProcessor.Models;
+using ImageBoardProcessor.Enumerations;
 
 namespace ImgDownloader.Models
 {
 
     public class E621QueryModelWPF : Query, IDataErrorInfo
     {
-
-
+        public E621QueryModelWPF(QueryType queryType) : base(queryType)
+        {
+        }
 
         public string this[string columnName]
         {
@@ -22,34 +24,34 @@ namespace ImgDownloader.Models
                 string result = null;
                 if (columnName == "searchName")
                 {
-                    if(string.IsNullOrWhiteSpace(searchName))
+                    if (string.IsNullOrWhiteSpace(searchName))
                         result = "The search name cannot be empty";
                 }
-                if (columnName == "tag0")
+                if (columnName == "searchterms[0]")
                 {
-                    if (string.IsNullOrWhiteSpace(tag0))
+                    if (string.IsNullOrWhiteSpace(searchTerms[0]))
                         result = "The first tag must have a value";
-                    if (tag0.Contains(' '))
+                    if (searchTerms[0].Contains(' '))
                         result = "Tags Cannot contain spaces";
                 }
-                if (columnName == "tag1")
+                if (columnName == "searchterms[1]")
                 {
-                    if (tag1.Contains(' '))
+                    if (searchTerms[1].Contains(' '))
                         result = "Tags Cannot contain spaces";
                 }
-                if (columnName == "tag2")
+                if (columnName == "searchterms[2]")
                 {
-                    if (tag2.Contains(' '))
+                    if (searchTerms[2].Contains(' '))
                         result = "Tags Cannot contain spaces";
                 }
-                if (columnName == "tag3")
+                if (columnName == "searchterms[3]")
                 {
-                    if (tag3.Contains(' '))
+                    if (searchTerms[3].Contains(' '))
                         result = "Tags Cannot contain spaces";
                 }
-                if (columnName == "tag4")
+                if (columnName == "searchterms[4]")
                 {
-                    if (tag4.Contains(' '))
+                    if (searchTerms[4].Contains(' '))
                         result = "Tags Cannot contain spaces";
                 }
                 if (columnName == "downloadDirectory")

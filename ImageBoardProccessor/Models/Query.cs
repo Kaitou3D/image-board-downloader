@@ -60,6 +60,11 @@ namespace ImageBoardProcessor.Models
 
         }
 
+        public Query()
+        {
+
+        }
+
         /// <summary>
         /// Takes the current search terms and generate the query
         /// </summary>
@@ -88,7 +93,7 @@ namespace ImageBoardProcessor.Models
             return URLbuilder.Uri;
         }
 
-        void isValid()
+        public bool isValid()
         {
             if (string.IsNullOrWhiteSpace(searchName))
                 throw new ArgumentException("SearchNAme is either null or contains and invalid character",nameof(searchName));
@@ -100,10 +105,13 @@ namespace ImageBoardProcessor.Models
                     throw new ArgumentException("A term in the array contains a space", nameof(searchTerms));
             }
 
-
+            return true;
 
         }
+         public void IAMNEW()
+        {
 
+        }
 
     }
 }

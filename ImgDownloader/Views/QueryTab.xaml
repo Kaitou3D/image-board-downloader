@@ -68,6 +68,7 @@
                     <Button Content="Save" Command="{Binding save}"  Width="100" HorizontalAlignment="Left"/>
                     <Button Content="Search"  Command="{Binding search}" Width="100" HorizontalAlignment="Left"/>
                 </StackPanel>
+                <ProgressBar Value="{Binding Progress}" Height="15"/>
 
             </StackPanel>
         </TabItem>
