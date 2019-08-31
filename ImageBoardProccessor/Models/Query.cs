@@ -27,7 +27,7 @@ namespace ImageBoardProcessor.Models
         public string downloadDirectory { get; set; }
         public QueryType SearchType { get; set; }
 
-        public UriBuilder URLbuilder { get; private set; }
+        public UriBuilder URLbuilder { get; set; }
         
 
         public Query(QueryType queryType)

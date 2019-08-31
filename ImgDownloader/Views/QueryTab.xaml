@@ -71,13 +71,11 @@
                 <StackPanel Orientation="Horizontal">
                     <ProgressBar Value="{Binding Progress}" Height="15" Width="200" HorizontalAlignment="Left"/>
                     <TextBox IsEnabled="False" Text="{Binding Progress}" Width=" 20" Background="White"/>
+                    <Button Content="Cancel" Width=" auto" Command="{Binding cancel}"/>
                 </StackPanel>
                 <ListView ItemsSource="{Binding ResultList}" Height="150" Width=" 300" HorizontalAlignment="Left"/>
 
             </StackPanel>
-        </TabItem>
-        <TabItem Header="testing">
-            <xctk:PropertyGrid SelectedObject="{Binding person}" AutoGenerateProperties="True"/>
         </TabItem>
     </TabControl>
 </Window>

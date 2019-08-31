@@ -29,6 +29,10 @@ namespace ImgDownloader.ViewModels
     {
         public Query query { get; set; } = new Query();
 
+        private CancellationTokenSource _tokensource;
+
+        private CancellationToken _token;
+
         ImgBrdProcessor processor;
 
         public int Progress { get; set; } = 0;
@@ -138,6 +142,7 @@ namespace ImgDownloader.ViewModels
         public DelegateCommand search { get; private set; }
         public DelegateCommand save { get; private set; }
         public DelegateCommand load { get; private set; }
+        public DelegateCommand cancel { get; private set; }
         public DelegateCommand OpenFolder { get; private set; }
 
         public string Error => throw new NotImplementedException();
@@ -202,17 +207,21 @@ namespace ImgDownloader.ViewModels
         public QueryTabViewModel()
         {
             query.searchName = "E621";
-            query.searchTerms[0] = "instant_loss_2koma";
+            query.searchTerms[0] = "Male";
             query.searchTerms[1] = "";
             query.searchTerms[2] = "";
             query.searchTerms[3] = "";
             query.searchTerms[4] = "";
-            query.downloadDirectory = @"D:\Pictures\Rouge";
-            search = new DelegateCommand(async () => await Search());
+            query.downloadDirectory = "";
+            search = new DelegateCommand(async () => await Search(), CanSearch);
             save = new DelegateCommand(SaveQuery, CanSaveQuery);
             load = new DelegateCommand(LoadQuery, CanLoadQuery);
+            cancel = new DelegateCommand(CancelSearch);
             OpenFolder = new DelegateCommand(LoadDirectory);
             processor = new ImgBrdProcessor();
+
+            _tokensource = new CancellationTokenSource();
+            _token = _tokensource.Token;
 
             //BindingOperations.EnableCollectionSynchronization(_data, _lock);
         }
@@ -225,6 +234,8 @@ namespace ImgDownloader.ViewModels
         {
             //query.ParseSearchQuery();
             Console.WriteLine($"Started at {DateTime.UtcNow.ToLongTimeString()}");
+           
+
 
             var tasking = await Task.Run(() => processor.E621Search(query.searchTerms.ToList()));
 
@@ -232,7 +243,7 @@ namespace ImgDownloader.ViewModels
             Progress<DownloadProgress> progress = new Progress<DownloadProgress>();
             progress.ProgressChanged += ReportProgress;
 
-            await Task.Run(() => download(tasking, progress));
+            await Task.Run(() => download(tasking, progress, _token));
 
             Console.WriteLine($"We completed the search! we found {tasking.Count}");
 
@@ -249,8 +260,12 @@ namespace ImgDownloader.ViewModels
         /// Parses through the query and begins downloading the images
         /// </summary>
         /// <param name="queryResults"> the list of items to download</param>
-        private void download(IEnumerable<IFile> queryResults, IProgress<DownloadProgress> progress)
+        private void download(IEnumerable<IFile> queryResults, IProgress<DownloadProgress> progress, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
             DownloadProgress report = new DownloadProgress();
             report.TotalToDownload = queryResults.Count();
             if (!Directory.Exists(query.downloadDirectory))
@@ -260,8 +275,13 @@ namespace ImgDownloader.ViewModels
             }
             if (queryResults.Any())
             {
+             
                 foreach (var file in queryResults)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     WebClient wc = new WebClient();
                     wc.DownloadFile(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
                     report.FilesDownloaded.Add(file.filename);
@@ -294,9 +314,15 @@ namespace ImgDownloader.ViewModels
         /// <returns>True = proceed with execution</returns>
         private bool CanSearch()
         {
+            if(true)
             return true;
             //return query.isValid();
             //return query.isValid();
+        }
+
+        private void CancelSearch()
+        {
+            _tokensource.Cancel();
         }
 
         /// <summary>
@@ -304,7 +330,21 @@ namespace ImgDownloader.ViewModels
         /// </summary>
         private void SaveQuery()
         {
+            if(String.IsNullOrWhiteSpace(SearchDir))
+            {
+                using (FolderBrowserDialog diag = new FolderBrowserDialog())
+                {
+                    diag.Description = "Choose a Destination";
+                    diag.RootFolder = Environment.SpecialFolder.MyComputer;
+                    if (diag.ShowDialog() == DialogResult.OK)
+                    {
+                        if (!Directory.Exists(diag.SelectedPath))
+                            Directory.CreateDirectory(diag.SelectedPath);
+                        SearchDir = diag.SelectedPath;
+                    }
+                }
 
+            }
             QuerySerilizer.SaveQuery(query);
         }
 
@@ -341,8 +381,12 @@ namespace ImgDownloader.ViewModels
         {
             using (FolderBrowserDialog diag = new FolderBrowserDialog())
             {
+                diag.Description = "Choose a Destination";
+                diag.RootFolder = Environment.SpecialFolder.MyComputer;
                 if (diag.ShowDialog() == DialogResult.OK)
                 {
+                    if (!Directory.Exists(diag.SelectedPath))
+                        Directory.CreateDirectory(diag.SelectedPath);
                     SearchDir = diag.SelectedPath;
                 }
             }
