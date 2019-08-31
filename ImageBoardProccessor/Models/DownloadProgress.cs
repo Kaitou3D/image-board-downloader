@@ -12,7 +12,11 @@ namespace ImageBoardProcessor.Models
             get; set;
         }
 
-        public int Total { get; set; }
+        public List<string> FilesDownloaded { get; set; } = new List<string>();
+
+        public int TotalToDownload { get; set; }
+
+        public int TotalDownloaded { get; set; }
 
         
     }

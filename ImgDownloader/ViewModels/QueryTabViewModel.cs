@@ -19,6 +19,8 @@ using System.Windows.Forms;
 using PropertyChanged;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace ImgDownloader.ViewModels
 {
@@ -127,6 +129,12 @@ namespace ImgDownloader.ViewModels
 
         public bool isSearch { get; set; }
 
+
+        public ObservableCollection<string> ResultList { get; set; } = new ObservableCollection<string>();
+
+        private object _lock = new object();
+        private ObservableCollection<string> _data;
+
         public DelegateCommand search { get; private set; }
         public DelegateCommand save { get; private set; }
         public DelegateCommand load { get; private set; }
@@ -205,6 +213,8 @@ namespace ImgDownloader.ViewModels
             load = new DelegateCommand(LoadQuery, CanLoadQuery);
             OpenFolder = new DelegateCommand(LoadDirectory);
             processor = new ImgBrdProcessor();
+
+            //BindingOperations.EnableCollectionSynchronization(_data, _lock);
         }
 
         /// <summary>
@@ -219,20 +229,35 @@ namespace ImgDownloader.ViewModels
             var tasking = await Task.Run(() => processor.E621Search(query.searchTerms.ToList()));
 
             Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
+            Progress<DownloadProgress> progress = new Progress<DownloadProgress>();
+            progress.ProgressChanged += ReportProgress;
 
-            await Task.Run(() => download(tasking));
+            await Task.Run(() => download(tasking, progress));
 
             Console.WriteLine($"We completed the search! we found {tasking.Count}");
 
 
         }
 
+        private void ReportProgress(object sender, DownloadProgress e)
+        {
+            Progress = (e.FilesDownloaded.Count() * 100) / e.TotalToDownload;
+            /*
+            lock(_data)
+            {
+               
+            }
+            */
+        }
+
         /// <summary>
         /// Parses through the query and begins downloading the images
         /// </summary>
         /// <param name="queryResults"> the list of items to download</param>
-        private void download(IEnumerable<IFile> queryResults)
+        private void download(IEnumerable<IFile> queryResults, IProgress<DownloadProgress> progress)
         {
+            DownloadProgress report = new DownloadProgress();
+            report.TotalToDownload = queryResults.Count();
             if (!Directory.Exists(query.downloadDirectory))
             {
                 Console.WriteLine("Directory missing, making it now");
@@ -240,19 +265,30 @@ namespace ImgDownloader.ViewModels
             }
             if (queryResults.Any())
             {
+                foreach (var file in queryResults)
+                {
+                    WebClient wc = new WebClient();
+                    wc.DownloadFileAsync(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
+                    report.FilesDownloaded.Add(file.filename);
+                    report.TotalDownloaded++;
+                    progress.Report(report);
+                    wc.Dispose();
+
+                }
+                /*
                 Parallel.ForEach(queryResults, new ParallelOptions { MaxDegreeOfParallelism = 4 },
                             file =>
                             {
-                                WebClient wc = new WebClient();
-                                wc.DownloadFileAsync(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
-                                wc.Dispose();
+
+
                             });
+                            */
                 Console.WriteLine("We're done!");
             }
             else
             { Console.WriteLine("We didnt get anything back!"); }
 
-            Console.WriteLine($"SCompleted at {DateTime.UtcNow.ToLongTimeString()}");
+            Console.WriteLine($"Completed at {DateTime.UtcNow.ToLongTimeString()}");
             query.lastExecute = DateTime.UtcNow;
 
         }

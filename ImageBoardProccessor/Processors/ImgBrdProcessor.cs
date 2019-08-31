@@ -262,7 +262,7 @@ namespace ImageBoardProcessor.Processors
             var client = new WebClient();
             
 
-            dp.Total = foo.Count;
+            dp.TotalDownloaded = foo.Count;
            
             foreach (var item in foo)
             {

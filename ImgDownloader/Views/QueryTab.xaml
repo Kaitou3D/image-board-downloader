@@ -69,6 +69,7 @@
                     <Button Content="Search"  Command="{Binding search}" Width="100" HorizontalAlignment="Left"/>
                 </StackPanel>
                 <ProgressBar Value="{Binding Progress}" Height="15" Width="200" HorizontalAlignment="Left"/>
+                <ListView ItemsSource="{Binding ResultList}" Height="150" Width=" 300" HorizontalAlignment="Left"/>
 
             </StackPanel>
         </TabItem>
