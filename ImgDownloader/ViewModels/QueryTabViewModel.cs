@@ -31,7 +31,7 @@ namespace ImgDownloader.ViewModels
 
         ImgBrdProcessor processor;
 
-        public int Progress { get; set; }
+        public int Progress { get; set; } = 0;
 
         public string SearchName
         {
@@ -242,12 +242,7 @@ namespace ImgDownloader.ViewModels
         private void ReportProgress(object sender, DownloadProgress e)
         {
             Progress = (e.FilesDownloaded.Count() * 100) / e.TotalToDownload;
-            /*
-            lock(_data)
-            {
-               
-            }
-            */
+            ResultList = new ObservableCollection<string>( e.FilesDownloaded);
         }
 
         /// <summary>
@@ -268,7 +263,7 @@ namespace ImgDownloader.ViewModels
                 foreach (var file in queryResults)
                 {
                     WebClient wc = new WebClient();
-                    wc.DownloadFileAsync(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
+                    wc.DownloadFile(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
                     report.FilesDownloaded.Add(file.filename);
                     report.TotalDownloaded++;
                     progress.Report(report);
