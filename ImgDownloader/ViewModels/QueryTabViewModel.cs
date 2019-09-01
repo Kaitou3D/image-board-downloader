@@ -7,7 +7,6 @@ using Prism.Mvvm;
 using Prism.Commands;
 using ImageBoardProcessor.Models;
 using ImageBoardProcessor.Processors;
-using ImgDownloader.Models;
 using System.Windows.Input;
 using System.Net;
 using System.Xml.Serialization;
@@ -24,28 +23,34 @@ using System.Windows.Data;
 
 namespace ImgDownloader.ViewModels
 {
+    /// <summary>
+    /// Main source 
+    /// </summary>
     [AddINotifyPropertyChangedInterface]
-    public class QueryTabViewModel : BindableBase, IDataErrorInfo
+    public class QueryTabViewModel :  IDataErrorInfo
     {
-        public Query query { get; set; } = new Query();
-
         private CancellationTokenSource _tokensource;
 
         private CancellationToken _token;
 
         ImgBrdProcessor processor;
 
+        /// <value>
+        /// Holds the  query information
+        /// </value>
+        public Query QueryObj { get; set; } = new Query();
+     
         public int Progress { get; set; } = 0;
-
+      
         public string SearchName
         {
             get
             {
-                return query.searchName;
+                return QueryObj.searchName;
             }
             set
             {
-                query.searchName = value;
+                QueryObj.searchName = value;
                 search.RaiseCanExecuteChanged();
 
             }
@@ -55,11 +60,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.searchTerms[0];
+                return QueryObj.searchTerms[0];
             }
             set
             {
-                query.searchTerms[0] = value;
+                QueryObj.searchTerms[0] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -68,11 +73,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.searchTerms[1];
+                return QueryObj.searchTerms[1];
             }
             set
             {
-                query.searchTerms[1] = value;
+                QueryObj.searchTerms[1] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -81,11 +86,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.searchTerms[2];
+                return QueryObj.searchTerms[2];
             }
             set
             {
-                query.searchTerms[2] = value;
+                QueryObj.searchTerms[2] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -94,11 +99,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.searchTerms[3];
+                return QueryObj.searchTerms[3];
             }
             set
             {
-                query.searchTerms[3] = value;
+                QueryObj.searchTerms[3] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -107,11 +112,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.searchTerms[4];
+                return QueryObj.searchTerms[4];
             }
             set
             {
-                query.searchTerms[4] = value;
+                QueryObj.searchTerms[4] = value;
                 search.RaiseCanExecuteChanged();
             }
         }
@@ -120,11 +125,11 @@ namespace ImgDownloader.ViewModels
         {
             get
             {
-                return query.downloadDirectory;
+                return QueryObj.downloadDirectory;
             }
             set
             {
-                query.downloadDirectory = value;
+                QueryObj.downloadDirectory = value;
                 search.RaiseCanExecuteChanged();
 
 
@@ -133,11 +138,7 @@ namespace ImgDownloader.ViewModels
 
         public bool isSearch { get; set; }
 
-
         public ObservableCollection<string> ResultList { get; set; } = new ObservableCollection<string>();
-
-        private object _lock = new object();
-        private ObservableCollection<string> _data;
 
         public DelegateCommand search { get; private set; }
         public DelegateCommand save { get; private set; }
@@ -206,13 +207,13 @@ namespace ImgDownloader.ViewModels
 
         public QueryTabViewModel()
         {
-            query.searchName = "E621";
-            query.searchTerms[0] = "Male";
-            query.searchTerms[1] = "";
-            query.searchTerms[2] = "";
-            query.searchTerms[3] = "";
-            query.searchTerms[4] = "";
-            query.downloadDirectory = "";
+            QueryObj.searchName = "E621";
+            QueryObj.searchTerms[0] = "Male";
+            QueryObj.searchTerms[1] = "";
+            QueryObj.searchTerms[2] = "";
+            QueryObj.searchTerms[3] = "";
+            QueryObj.searchTerms[4] = "";
+            QueryObj.downloadDirectory = "";
             search = new DelegateCommand(async () => await Search(), CanSearch);
             save = new DelegateCommand(SaveQuery, CanSaveQuery);
             load = new DelegateCommand(LoadQuery, CanLoadQuery);
@@ -237,7 +238,7 @@ namespace ImgDownloader.ViewModels
            
 
 
-            var tasking = await Task.Run(() => processor.E621Search(query.searchTerms.ToList()));
+            var tasking = await Task.Run(() => processor.E621Search(QueryObj.searchTerms.ToList()));
 
             Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
             Progress<DownloadProgress> progress = new Progress<DownloadProgress>();
@@ -248,12 +249,6 @@ namespace ImgDownloader.ViewModels
             Console.WriteLine($"We completed the search! we found {tasking.Count}");
 
 
-        }
-
-        private void ReportProgress(object sender, DownloadProgress e)
-        {
-            Progress = (e.FilesDownloaded.Count() * 100) / e.TotalToDownload;
-            ResultList = new ObservableCollection<string>( e.FilesDownloaded);
         }
 
         /// <summary>
@@ -268,10 +263,10 @@ namespace ImgDownloader.ViewModels
             }
             DownloadProgress report = new DownloadProgress();
             report.TotalToDownload = queryResults.Count();
-            if (!Directory.Exists(query.downloadDirectory))
+            if (!Directory.Exists(QueryObj.downloadDirectory))
             {
                 Console.WriteLine("Directory missing, making it now");
-                Directory.CreateDirectory(query.downloadDirectory);
+                Directory.CreateDirectory(QueryObj.downloadDirectory);
             }
             if (queryResults.Any())
             {
@@ -283,29 +278,32 @@ namespace ImgDownloader.ViewModels
                         return;
                     }
                     WebClient wc = new WebClient();
-                    wc.DownloadFile(new Uri(file.File_url), $@"{query.downloadDirectory}\{file.filename}");
+                    wc.DownloadFile(new Uri(file.File_url), $@"{QueryObj.downloadDirectory}\{file.filename}");
                     report.FilesDownloaded.Add(file.filename);
-                    report.TotalDownloaded++;
                     progress.Report(report);
                     wc.Dispose();
 
                 }
-                /*
-                Parallel.ForEach(queryResults, new ParallelOptions { MaxDegreeOfParallelism = 4 },
-                            file =>
-                            {
 
-
-                            });
-                            */
                 Console.WriteLine("We're done!");
             }
             else
             { Console.WriteLine("We didnt get anything back!"); }
 
             Console.WriteLine($"Completed at {DateTime.UtcNow.ToLongTimeString()}");
-            query.lastExecute = DateTime.UtcNow;
+            QueryObj.lastExecute = DateTime.UtcNow;
 
+        }
+
+        /// <summary>
+        /// Report function that commicates updates to UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReportProgress(object sender, DownloadProgress e)
+        {
+            Progress = e.PercentComplete;
+            ResultList = new ObservableCollection<string>(e.FilesDownloaded);
         }
 
         /// <summary>
@@ -345,7 +343,7 @@ namespace ImgDownloader.ViewModels
                 }
 
             }
-            QuerySerilizer.SaveQuery(query);
+            QuerySerilizer.SaveQuery(QueryObj);
         }
 
         /// <summary>
@@ -354,7 +352,7 @@ namespace ImgDownloader.ViewModels
         /// <returns>True: Proceed with writing</returns>
         private bool CanSaveQuery()
         {
-            return query.isValid();
+            return QueryObj.isValid();
 
         }
 
@@ -369,7 +367,7 @@ namespace ImgDownloader.ViewModels
                 diag.Filter = "xml Files (*.xml)|*.xml";
                 if (diag.ShowDialog() == DialogResult.OK)
                 {
-                    query = QuerySerilizer.LoadQuery(diag.FileName);
+                    QueryObj = QuerySerilizer.LoadQuery(diag.FileName);
                 }
             }
         }
@@ -400,6 +398,9 @@ namespace ImgDownloader.ViewModels
         {
             return true;
         }
+
+     
+
 
 
     }

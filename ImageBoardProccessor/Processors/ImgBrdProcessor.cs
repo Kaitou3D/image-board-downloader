@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using ImageBoardProcessor.Interfaces;
 using ImageBoardProcessor.Models;
 using ImageBoardProcessor.Clients;
-using System.Drawing;
-using System.IO;
 using System.Collections.Concurrent;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Linq;
+
 
 using System.Net.Http.Headers;
 
@@ -261,8 +256,6 @@ namespace ImageBoardProcessor.Processors
             DownloadProgress dp = new DownloadProgress();
             var client = new WebClient();
             
-
-            dp.TotalDownloaded = foo.Count;
            
             foreach (var item in foo)
             {
