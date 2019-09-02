@@ -151,11 +151,15 @@ namespace ImageBoardProcessor.Processors
                         }
                         else
                         {
-                            throw new Exception(response.ReasonPhrase);
+                            throw new HttpRequestException(response.ReasonPhrase);
                         }
 
                     }
-
+                    if (results.Count == 0)
+                    {
+                        throw new ArgumentException("Search returned 0 results. Please cheack you tags");
+                        //return null;
+                    }
                     beforeID = results.Last().Id.ToString();
 
                     files.AddRange(results);

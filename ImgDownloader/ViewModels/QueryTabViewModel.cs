@@ -235,18 +235,29 @@ namespace ImgDownloader.ViewModels
         {
             //query.ParseSearchQuery();
             Console.WriteLine($"Started at {DateTime.UtcNow.ToLongTimeString()}");
-           
 
+            try
+            {
+                var tasking = await Task.Run(() => processor.E621Search(QueryObj.searchTerms.ToList()));
+                Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
+                Progress<DownloadProgress> progress = new Progress<DownloadProgress>();
+                progress.ProgressChanged += ReportProgress;
 
-            var tasking = await Task.Run(() => processor.E621Search(QueryObj.searchTerms.ToList()));
+                await Task.Run(() => download(tasking, progress, _token));
 
-            Console.WriteLine($"Moved on at {DateTime.UtcNow.ToLongTimeString()}");
-            Progress<DownloadProgress> progress = new Progress<DownloadProgress>();
-            progress.ProgressChanged += ReportProgress;
+                Console.WriteLine($"We completed the search! we found {tasking.Count}");
 
-            await Task.Run(() => download(tasking, progress, _token));
+            }
+            catch (ArgumentException e)
+            {
 
-            Console.WriteLine($"We completed the search! we found {tasking.Count}");
+                MessageBox.Show(e.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (System.Net.Http.HttpRequestException e)
+            {
+                MessageBox.Show(e.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
 
 
         }
